@@ -154,7 +154,6 @@ This is a complete small per-process rendering config.
   "BackgroundColor": "rgb(22,28,38)",
   "Text": [
     {
-      "Mode": "Overlay",
       "Text": "PROTECTED {PNAME}\n{USER} · {MACHINE}\n{DATE} {TIME24}",
       "Details": {
         "Display": {
@@ -205,7 +204,7 @@ Negative margins let a proxy, visual item, or toggle extend outside the target w
 }
 ```
 
-## 8. Background image, foreground text, and QR code
+## 8. Full-surface image layer, text, and QR code
 
 Each item selects its own rendering pass.
 
@@ -214,7 +213,6 @@ Each item selects its own rendering pass.
   "BackgroundColor": "rgb(14,20,30)",
   "Image": [
     {
-      "Mode": "Background",
       "Path": "../assets/protection-grid.png",
       "Animate": false,
       "Details": {
@@ -227,7 +225,6 @@ Each item selects its own rendering pass.
   ],
   "Text": [
     {
-      "Mode": "Overlay",
       "Text": "Internal use only",
       "Details": {
         "Display": {
@@ -252,7 +249,6 @@ Each item selects its own rendering pass.
   "QRCode": [
     {
       "Name": "session-code",
-      "Mode": "Overlay",
       "Text": "https://example.invalid/session/{PID}",
       "Details": {
         "Display": {

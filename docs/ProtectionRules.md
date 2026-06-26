@@ -38,7 +38,7 @@ Every executable key maps to an ordered array of process rules.
 }
 ```
 
-Rules are evaluated in array order. Put specific command-line filters before a general fallback rule for the same executable. The editor preserves ordinary characters in executable and rule names, including `+` in names such as `notepad++.exe`.
+Rules are evaluated in two stages. First, the native manager filters rules by executable name and command-line flags. Then it resolves a rule separately for every eligible top-level window using its runtime title and class. The matching rule with the most required title/class specificity wins; array order is used only when two matches are equally specific. A broad fallback rule with no required title/class selectors therefore remains safe beside more-specific rules. The editor preserves ordinary characters in executable and rule names, including `+` in names such as `notepad++.exe`.
 
 
 ## Controller self-protection
@@ -88,7 +88,9 @@ Use both groups when a caption must gate startup and must continue to gate activ
 }
 ```
 
-The native manager receives Windows name-change notifications and performs a rescan. A managed window that no longer matches its runtime title/class selector is detached immediately. `keepHiddenWindowsAlive` still keeps a hidden tray-style window alive only while it continues to match its selected runtime rule.
+The native manager receives Windows name-change notifications and performs a rescan. It resolves the best matching rule for each managed HWND during every scan. A caption or class change can therefore switch a window from one configuration to another; the native manager restarts only that window's session with the newly selected configuration. If no runtime rule matches, the session detaches immediately. `keepHiddenWindowsAlive` keeps a hidden tray-style window alive only while it continues to match a runtime rule.
+
+For example, place a general `7zFM.exe` fallback rule beside a second rule that requires `*CaptureProtector*` and `7-Zip::FM`. Normal 7-Zip windows use the fallback configuration, while windows with that title/class use the second configuration. The special rule does not need `requiredInjectionWindowTitles` or `requiredInjectionWindowClasses`; those selectors delay process injection and are not used to choose the configuration for an individual HWND.
 
 ## Owned Word file dialogs
 
@@ -103,6 +105,8 @@ Each rule can create or link a rendering configuration beneath:
 ```text
 %LOCALAPPDATA%\CaptureProtector\configs\<process>.json
 ```
+
+The rule editor exposes a **Configuration name** instead of a writable raw path. CaptureProtector derives the read-only location as `configs/<name>.json`. New process configurations use the executable filename, for example `configs/7zFM.exe.json`. If a file or another rule already uses that name, CaptureProtector assigns `configs/7zFM.exe (2).json`, then `(3)`, and so on. Renaming a configuration moves its private file; when another rule still references the source file, CaptureProtector copies it instead so that rule remains unchanged.
 
 The visual editor supports text, image, and QR code rules. Every visual rule has an independent placement mode:
 
@@ -122,7 +126,7 @@ The **Preview on target** switch uses the selected process's native protection s
 1. Choose a readable entry from **Preview target**. The list contains only visible windows with a live per-window native agent session, so CaptureProtector helper proxy and toggle windows are excluded.
 2. The controller saves the current unsaved visual draft into a temporary JSON file next to the regular configuration file.
 3. It sends `BEGIN_PREVIEW` to the connected native process agent.
-4. The native session parses that temporary config and renders it with the same `OverlayRenderer` used during normal protection.
+4. The native session parses that temporary config and renders it with the same `Direct2DRenderer` used during normal protection.
 5. Editor changes are debounced, written to the temporary JSON, and sent with `UPDATE_PREVIEW`.
 6. Turning preview off, saving, or closing the editor sends `END_PREVIEW` and removes the temporary file.
 
@@ -134,4 +138,4 @@ During preview, the existing native proxy receives a one-time non-activating Z-o
 
 **Save changes** validates the draft and writes `CaptureProtector.Auto.json`. The controller tells each already injected native agent to reload the rule file in place, then refreshes process discovery for future processes. Unrelated protected processes keep their loaded DLL and active sessions.
 
-A process excluded by the saved configuration detaches its local protected windows. Its native helper can remain loaded briefly when its safety barrier or no-window grace period prevents immediate unloading; that state is recorded in the controller and native logs.
+When the final enabled rule compatible with an already injected process is removed, the native agent immediately detaches all of its local window sessions and begins its normal safe DLL shutdown. This explicit rule-removal path does not wait for `emptyWindowGraceMilliseconds`; the only possible delay is the existing hook and window-thread safety barrier.

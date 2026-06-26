@@ -60,6 +60,7 @@ Each executable key uses an ordered array:
     "example.exe": [
       {
         "name": "example-default",
+        "configName": "example.exe",
         "configPath": "configs/example.exe.json",
         "protect": true
       }
@@ -73,12 +74,13 @@ Put rules with specific command-line filters before a generic fallback. Pattern 
 | Field | Evaluated by | Meaning |
 |---|---|---|
 | `name` | Controller/native diagnostics | Human-readable rule name. |
-| `configPath` | Controller and native DLL | Per-process rendering config. Relative paths are resolved below the user-data root. |
+| `configName` | Controller | Human-readable configuration filename without the `.json` extension. The Controller uses it to create collision-safe per-rule files. |
+| `configPath` | Controller and native DLL | Per-process rendering config. Relative paths are resolved below the user-data root. The Controller manages this value; the rule editor displays it read-only. |
 | `initiallyEnabled` | Native session | Initial protection state for the rule. |
 | `protect` | Controller | `false` stops the rule from causing injection. |
 | `requiredFlags` / `excludedFlags` | Controller before injection | Command-line argument selectors. They require readable process command-line information. |
-| `requiredWindowTitles` / `excludedWindowTitles` | Native DLL | Runtime title selectors for individual HWNDs. |
-| `requiredWindowClasses` / `excludedWindowClasses` | Native DLL | Runtime class selectors for individual HWNDs. |
+| `requiredWindowTitles` / `excludedWindowTitles` | Native DLL | Runtime title selectors used to resolve a rule for each individual HWND. |
+| `requiredWindowClasses` / `excludedWindowClasses` | Native DLL | Runtime class selectors used to resolve a rule for each individual HWND. |
 | `unloadWhenNoWindows` | Native DLL | Per-rule override for idle DLL unload. |
 | `includeToolWindows` | Native DLL | Per-rule override for tool-window candidates. |
 | `protectOwnedWindows` | Native DLL | Per-rule override for owned top-level windows. |
@@ -105,7 +107,9 @@ The following fields are controller-side startup gates. They are checked before 
 
 ### Runtime title/class changes
 
-The native manager listens for name-change events and re-evaluates its selected runtime title/class rule for every managed HWND. If a window no longer matches a required selector, or starts matching an excluded selector, CaptureProtector detaches the session, proxy, and toggle from that HWND immediately.
+The native manager listens for name-change events and resolves the best compatible runtime rule for every managed HWND. Rules with more required title/class specificity win; source order breaks exact ties. If the selected rule changes, CaptureProtector restarts that HWND's session with the new rule's configuration. If no protecting rule matches, it detaches the session, proxy, and toggle immediately.
+
+Removing the final enabled process rule from `CaptureProtector.Auto.json` causes an already injected process agent to detach all sessions and start safe DLL shutdown immediately after its reload command.
 
 `keepHiddenWindowsAlive` does not override a title/class mismatch. It only preserves a hidden tray-style HWND that still matches the selected runtime rule. The native DLL itself then follows `unloadWhenNoWindows` and `emptyWindowGraceMilliseconds` to decide whether it can unload.
 
@@ -236,7 +240,7 @@ When `Fill` is true, location and offset move the complete grid. When it is fals
 
 ```json
 {
-  "Mode": "Overlay",
+  "ZIndex": 20,
   "Text": "Printed on {DATE} {TIME24}",
   "Details": {
     "Display": {},
@@ -252,7 +256,9 @@ When `Fill` is true, location and offset move the complete grid. When it is fals
 }
 ```
 
-`Mode` is independently set to `Background` or `Overlay` for every item.
+Every regular item is a scene layer. Its order is controlled by positive `ZIndex`; `0` belongs only to the locked Background source.
+
+`Mode: "Background" | "Overlay"` is accepted only as a legacy compatibility hint when an old item has no `ZIndex`. The Controller removes `Mode` when that configuration is saved.
 
 ## `Image[]`
 
@@ -260,7 +266,7 @@ An image can use either a path relative to the configuration file or embedded Ba
 
 ```json
 {
-  "Mode": "Overlay",
+  "ZIndex": 20,
   "Path": "../assets/shield.png",
   "Animate": false,
   "Details": {
@@ -289,7 +295,7 @@ When `customAnimation.enabled` is `true`, the renderer draws one instance of the
 ```json
 {
   "Name": "session-code",
-  "Mode": "Overlay",
+  "ZIndex": 30,
   "Text": "https://example.invalid/{PID}",
   "Details": {
     "Display": {
@@ -310,17 +316,31 @@ When `customAnimation.enabled` is `true`, the renderer draws one instance of the
 
 ## Rendering order
 
-The renderer uses this stable pass order:
+`BackgroundColor` is the locked General base layer at `ZIndex = 0`. It remains the base source for both Direct2D and Direct3D rendering.
 
-1. `BackgroundColor`
-2. background images
-3. background text
-4. background QR codes
-5. overlay images
-6. overlay text
-7. overlay QR codes
+Every Text, Image, QR code, and Effects Studio layer is a normal scene layer with a positive `ZIndex`. Lower values draw first and higher values draw later. The Controller assigns consecutive values from the **Visual rules** drag-and-drop order, so users do not need to edit numeric values directly.
 
-Array order is preserved within each type and pass.
+For manually authored JSON, equal z-index values use a deterministic type and array-order tie break. Use unique positive z-index values when the exact cross-type order matters.
+
+For images, `Fill` or `UniformToFill` with no explicit size makes the image cover the proxy surface. This is the replacement for a former background image mode.
+
+## Effects Studio geometry
+
+An Effects Studio layer can set `Geometry` to `Rectangle`, `Circle`, or `Triangle`.
+
+```json
+{
+  "Name": "Rotated scene effect",
+  "Geometry": "Triangle",
+  "Display": {
+    "Size": { "Width": 320, "Height": 220 },
+    "RotationAngle": 25
+  },
+  "Source": "float4 CP_Effect(float2 uv) { return CP_SampleScene(uv); }"
+}
+```
+
+`Rectangle` is the default for old configurations and for unrecognized values. `Circle` is inscribed within the configured bounds. `Triangle` has an upward apex before `RotationAngle` is applied. When a Rectangle or Triangle rotates, the renderer expands the internal shader draw area so the rotated corners are not clipped; the original effect `uv` coordinates remain unchanged.
 
 ## Native real-time preview
 

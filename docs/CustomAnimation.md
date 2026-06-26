@@ -1,12 +1,11 @@
 # Custom animation
 
-CaptureProtector 1.1.0 adds `customAnimation` for **one text, image, or QR-code item**. It is intentionally numeric-only: expressions can position, rotate, fade, or scale the item, but they cannot call Windows APIs, read files, or run scripts.
+CaptureProtector supports `customAnimation` for **one text, image, or QR-code item**. It is intentionally numeric-only: expressions can position, rotate, fade, or scale the item, but they cannot call Windows APIs, read files, or run scripts.
 
 `customAnimation` belongs directly on a `Text[]`, `Image[]`, or `QRCode[]` item. Use lower-camel JSON property names when saving from the Controller. The native loader also accepts compatible PascalCase aliases for manually authored files.
 
 ```json
 {
-    "Mode": "Overlay",
     "Path": "../assets/logo.png",
     "customAnimation": {
         "enabled": true,

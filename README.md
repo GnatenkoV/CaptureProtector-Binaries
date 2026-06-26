@@ -1,41 +1,38 @@
 # CaptureProtector
 
-> Configurable visual privacy surfaces for selected Windows application windows.
+CaptureProtector is a Windows desktop application for managing configurable privacy-oriented presentation and capture-protection behavior for selected application windows.
 
-CaptureProtector is a Windows desktop application for applying configurable capture-protection behavior and privacy-focused visual presentation to application windows you own or are authorized to manage.
+It lets you create per-process rules, apply configurable background or overlay content, and manage protected windows from one controller. Visual configuration supports text, images, animated GIFs, QR codes, dynamic values, custom animation, and an optional Direct3D Effects Studio.
 
-It combines a WPF controller with a native rendering component to manage selected processes, protect matching windows, and present configurable text, image, GIF, and QR-code content where appropriate.
+## What it is for
 
-## Highlights
+Use CaptureProtector with Windows applications and information that you own or are authorized to manage. Typical workflows include preparing a selected application window for controlled demonstrations, presentations, screenshots, or supported capture workflows without changing the capture application itself.
 
-- **Per-process protection rules**
-  - Choose which application processes are managed.
-  - Match windows by title, class, visibility, ownership, and other rule conditions.
-  - Keep separate configuration for different applications.
+CaptureProtector does not inject into conferencing, chat, or screen-capture applications. It does not install a virtual camera or virtual display.
 
-- **Flexible visual rules**
-  - Add text, images, animated GIFs, and QR codes.
-  - Configure every visual item independently as a **Background** or **Overlay**.
-  - Control alignment, spacing, margins, size, opacity, rotation, and stretching.
-  - Use dynamic values such as `{USER}`, `{MACHINE}`, `{PNAME}`, `{PID}`, `{DATE}`, and `{TIME24}`.
+## Key capabilities
 
-- **Custom animation for text, images, and QR codes**
-  - Animate position, rotation, opacity, and scale with a small numeric-expression engine.
-  - Includes ready-to-use presets such as DVD bounce, orbit, figure eight, wave drift, pendulum, pulse, float, and beacon.
-  - Uses a constrained expression format rather than a general scripting engine.
-  - Animation pauses while a protected window is unavailable, hidden, minimized, or otherwise inactive.
+- Per-process protection rules with title, class, visibility, ownership, and command-line matching.
+- Independent protected-window controls and a small on-window protection toggle.
+- Configurable Text, Image, GIF, QR code, Background, and Overlay scene layers.
+- Live preview in the configuration editor using the same native renderer used at runtime.
+- Optional Direct3D Effects Studio with Rectangle, Circle, and Triangle geometry.
+- Dark, light, and system themes; English, Ukrainian, and Polish UI language packs.
+- User-editable configuration, assets, languages, and logs under `%LOCALAPPDATA%\CaptureProtector`.
 
-- **Live configuration preview**
-  - Preview visual changes using the same native renderer used during normal operation.
-  - Tune a selected application configuration without maintaining a separate WPF-only preview implementation.
+## Requirements
 
-- **Taskbar-aware presentation**
-  - Supports optional protected taskbar thumbnail and live-preview presentation for managed windows.
+- 64-bit Windows 10 or Windows 11.
+- Administrator approval may be required when the controller manages an elevated target application.
 
-- **Desktop-friendly controller**
-  - Tray-capable WPF interface.
-  - Dark/light theme support and localization.
-  - Per-user configuration, visual assets, and logs stored under `%LOCALAPPDATA%\CaptureProtector`.
+## Install and start
+
+1. Download the current CaptureProtector installer or release archive from this repository.
+2. Install or extract the release package.
+3. Start **CaptureProtector Controller**.
+4. Open **Protection rules**, choose **Protect process**, and select the application process you want to manage.
+5. Open the linked visual configuration, adjust scene layers, and save the rule.
+6. Use **General** to confirm and control the protected windows.
 
 ## Design boundaries
 
@@ -68,9 +65,18 @@ CaptureProtector.Native
 - [Controller UI](docs/ControllerUI.md)
 - [Custom animation](docs/CustomAnimation.md)
 - [Localization](docs/Localization.md)
+- [Effects Studio](docs/EffectsStudio.md)
+
+## Support files
+
+The application stores its user-editable data in:
+
+```text
+%LOCALAPPDATA%\CaptureProtector\
+```
+
+This includes rules, per-process configurations, saved assets, language packs, settings, and session logs.
 
 ## License
 
-See [LICENSE.md](LICENSE.md).
-
-Third-party acknowledgements are listed in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+See [LICENSE.md](LICENSE.md). Third-party notices are in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

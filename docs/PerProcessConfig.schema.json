@@ -1,616 +1,683 @@
 {
-    "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$id": "https://captureprotector.local/schemas/per-process-config.schema.json",
-    "title": "CaptureProtector per-process rendering config",
-    "type": "object",
-    "properties": {
-        "ProtectionWindow": {
-            "$ref": "#/$defs/protectionWindow"
-        },
-        "ToggleButton": {
-            "$ref": "#/$defs/toggleButton"
-        },
-        "BackgroundColor": {
-            "type": "string"
-        },
-        "Text": {
-            "type": "array",
-            "items": {
-                "$ref": "#/$defs/textItem"
-            }
-        },
-        "Image": {
-            "type": "array",
-            "items": {
-                "$ref": "#/$defs/imageItem"
-            }
-        },
-        "QRCode": {
-            "type": "array",
-            "items": {
-                "$ref": "#/$defs/qrItem"
-            }
-        },
-        "TaskbarPreviewProtection": {
-            "$ref": "#/$defs/taskbarPreviewProtection"
-        },
-        "Performance": {
-            "$ref": "#/$defs/performance"
-        }
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://captureprotector.local/schemas/per-process-config.schema.json",
+  "title": "CaptureProtector per-process rendering config",
+  "type": "object",
+  "properties": {
+    "ProtectionWindow": {
+      "$ref": "#/$defs/protectionWindow"
     },
-    "additionalProperties": true,
-    "$defs": {
-        "mode": {
-            "type": "string",
-            "enum": [
-                "Background",
-                "Overlay"
-            ]
+    "ToggleButton": {
+      "$ref": "#/$defs/toggleButton"
+    },
+    "BackgroundColor": {
+      "type": "string"
+    },
+    "Text": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/textItem"
+      }
+    },
+    "Image": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/imageItem"
+      }
+    },
+    "QRCode": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/qrItem"
+      }
+    },
+    "TaskbarPreviewProtection": {
+      "$ref": "#/$defs/taskbarPreviewProtection"
+    },
+    "Performance": {
+      "$ref": "#/$defs/performance"
+    },
+    "DeveloperRenderer": {
+      "$ref": "#/$defs/developerRenderer"
+    }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "point": {
+      "type": "object",
+      "properties": {
+        "X": {
+          "type": "number"
         },
-        "point": {
-            "type": "object",
-            "properties": {
-                "X": {
-                    "type": "number"
-                },
-                "Y": {
-                    "type": "number"
-                }
+        "Y": {
+          "type": "number"
+        }
+      },
+      "additionalProperties": false
+    },
+    "size": {
+      "type": "object",
+      "properties": {
+        "Width": {
+          "type": "number",
+          "minimum": 0
+        },
+        "Height": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "margins": {
+      "type": "object",
+      "properties": {
+        "Left": {
+          "type": "number",
+          "minimum": -4096,
+          "maximum": 4096
+        },
+        "Top": {
+          "type": "number",
+          "minimum": -4096,
+          "maximum": 4096
+        },
+        "Right": {
+          "type": "number",
+          "minimum": -4096,
+          "maximum": 4096
+        },
+        "Bottom": {
+          "type": "number",
+          "minimum": -4096,
+          "maximum": 4096
+        }
+      },
+      "additionalProperties": false
+    },
+    "length": {
+      "oneOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "string",
+          "pattern": "^-?[0-9]+(?:\\.[0-9]+)?(?:px|dip|ch)?$"
+        }
+      ]
+    },
+    "display": {
+      "type": "object",
+      "properties": {
+        "Fill": {
+          "type": "boolean"
+        },
+        "Rows": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 64
+        },
+        "Columns": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 64
+        },
+        "RowSpacing": {
+          "$ref": "#/$defs/length"
+        },
+        "ColumnSpacing": {
+          "$ref": "#/$defs/length"
+        },
+        "AbsoluteLocation": {
+          "type": "boolean"
+        },
+        "Location": {
+          "$ref": "#/$defs/point"
+        },
+        "Margins": {
+          "$ref": "#/$defs/margins"
+        },
+        "HorizontalAlignment": {
+          "type": "string",
+          "enum": [
+            "Left",
+            "Center",
+            "Right"
+          ]
+        },
+        "VerticalAlignment": {
+          "type": "string",
+          "enum": [
+            "Top",
+            "Center",
+            "Bottom"
+          ]
+        },
+        "Offset": {
+          "$ref": "#/$defs/point"
+        },
+        "RotationAngle": {
+          "type": "number"
+        },
+        "Transparency": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "Size": {
+          "$ref": "#/$defs/size"
+        },
+        "Stretch": {
+          "type": "string",
+          "enum": [
+            "None",
+            "Fill",
+            "Uniform",
+            "UniformToFill"
+          ]
+        },
+        "FillToWindow": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    },
+    "protectionWindow": {
+      "type": "object",
+      "properties": {
+        "Margin": {
+          "type": "integer",
+          "minimum": -256,
+          "maximum": 256
+        },
+        "MarginLeft": {
+          "type": "integer",
+          "minimum": -256,
+          "maximum": 256
+        },
+        "MarginTop": {
+          "type": "integer",
+          "minimum": -256,
+          "maximum": 256
+        },
+        "MarginRight": {
+          "type": "integer",
+          "minimum": -256,
+          "maximum": 256
+        },
+        "MarginBottom": {
+          "type": "integer",
+          "minimum": -256,
+          "maximum": 256
+        },
+        "MatchCorners": {
+          "type": "boolean"
+        },
+        "Margins": {
+          "$ref": "#/$defs/margins"
+        }
+      },
+      "additionalProperties": true
+    },
+    "toggleButton": {
+      "type": "object",
+      "properties": {
+        "Size": {
+          "type": "integer",
+          "minimum": 18,
+          "maximum": 128
+        },
+        "LeftInset": {
+          "type": "integer",
+          "minimum": -4096,
+          "maximum": 4096
+        },
+        "BottomInset": {
+          "type": "integer",
+          "minimum": -4096,
+          "maximum": 4096
+        },
+        "AbsoluteLocation": {
+          "type": "boolean"
+        },
+        "Location": {
+          "$ref": "#/$defs/point"
+        },
+        "Margins": {
+          "$ref": "#/$defs/margins"
+        },
+        "HorizontalAlignment": {
+          "type": "string",
+          "enum": [
+            "Left",
+            "Center",
+            "Right"
+          ]
+        },
+        "VerticalAlignment": {
+          "type": "string",
+          "enum": [
+            "Top",
+            "Center",
+            "Bottom"
+          ]
+        },
+        "Offset": {
+          "$ref": "#/$defs/point"
+        }
+      },
+      "additionalProperties": true
+    },
+    "details": {
+      "type": "object",
+      "properties": {
+        "Display": {
+          "$ref": "#/$defs/display"
+        }
+      },
+      "additionalProperties": true
+    },
+    "textItem": {
+      "type": "object",
+      "required": [
+        "Text"
+      ],
+      "properties": {
+        "Text": {
+          "type": "string"
+        },
+        "Details": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/details"
             },
-            "additionalProperties": false
-        },
-        "size": {
-            "type": "object",
-            "properties": {
-                "Width": {
-                    "type": "number",
-                    "minimum": 0
-                },
-                "Height": {
-                    "type": "number",
-                    "minimum": 0
-                }
-            },
-            "additionalProperties": false
-        },
-        "margins": {
-            "type": "object",
-            "properties": {
-                "Left": {
-                    "type": "number",
-                    "minimum": -4096,
-                    "maximum": 4096
-                },
-                "Top": {
-                    "type": "number",
-                    "minimum": -4096,
-                    "maximum": 4096
-                },
-                "Right": {
-                    "type": "number",
-                    "minimum": -4096,
-                    "maximum": 4096
-                },
-                "Bottom": {
-                    "type": "number",
-                    "minimum": -4096,
-                    "maximum": 4096
-                }
-            },
-            "additionalProperties": false
-        },
-        "length": {
-            "oneOf": [
-                {
-                    "type": "number"
-                },
-                {
-                    "type": "string",
-                    "pattern": "^-?[0-9]+(?:\\.[0-9]+)?(?:px|dip|ch)?$"
-                }
-            ]
-        },
-        "display": {
-            "type": "object",
-            "properties": {
-                "Fill": {
-                    "type": "boolean"
-                },
-                "Rows": {
-                    "type": "integer",
-                    "minimum": 1,
-                    "maximum": 64
-                },
-                "Columns": {
-                    "type": "integer",
-                    "minimum": 1,
-                    "maximum": 64
-                },
-                "RowSpacing": {
-                    "$ref": "#/$defs/length"
-                },
-                "ColumnSpacing": {
-                    "$ref": "#/$defs/length"
-                },
-                "AbsoluteLocation": {
-                    "type": "boolean"
-                },
-                "Location": {
-                    "$ref": "#/$defs/point"
-                },
-                "Margins": {
-                    "$ref": "#/$defs/margins"
-                },
-                "HorizontalAlignment": {
-                    "type": "string",
-                    "enum": [
-                        "Left",
-                        "Center",
-                        "Right"
-                    ]
-                },
-                "VerticalAlignment": {
-                    "type": "string",
-                    "enum": [
-                        "Top",
-                        "Center",
-                        "Bottom"
-                    ]
-                },
-                "Offset": {
-                    "$ref": "#/$defs/point"
-                },
-                "RotationAngle": {
-                    "type": "number"
-                },
-                "Transparency": {
-                    "type": "number",
-                    "minimum": 0,
-                    "maximum": 1
-                },
-                "Size": {
-                    "$ref": "#/$defs/size"
-                },
-                "Stretch": {
-                    "type": "string",
-                    "enum": [
-                        "None",
-                        "Fill",
-                        "Uniform",
-                        "UniformToFill"
-                    ]
-                }
-            },
-            "additionalProperties": true
-        },
-        "protectionWindow": {
-            "type": "object",
-            "properties": {
-                "Margin": {
-                    "type": "integer",
-                    "minimum": -256,
-                    "maximum": 256
-                },
-                "MarginLeft": {
-                    "type": "integer",
-                    "minimum": -256,
-                    "maximum": 256
-                },
-                "MarginTop": {
-                    "type": "integer",
-                    "minimum": -256,
-                    "maximum": 256
-                },
-                "MarginRight": {
-                    "type": "integer",
-                    "minimum": -256,
-                    "maximum": 256
-                },
-                "MarginBottom": {
-                    "type": "integer",
-                    "minimum": -256,
-                    "maximum": 256
-                },
-                "MatchCorners": {
-                    "type": "boolean"
-                },
-                "Margins": {
-                    "$ref": "#/$defs/margins"
-                }
-            },
-            "additionalProperties": true
-        },
-        "toggleButton": {
-            "type": "object",
-            "properties": {
-                "Size": {
-                    "type": "integer",
-                    "minimum": 18,
-                    "maximum": 128
-                },
-                "LeftInset": {
-                    "type": "integer",
-                    "minimum": -4096,
-                    "maximum": 4096
-                },
-                "BottomInset": {
-                    "type": "integer",
-                    "minimum": -4096,
-                    "maximum": 4096
-                },
-                "AbsoluteLocation": {
-                    "type": "boolean"
-                },
-                "Location": {
-                    "$ref": "#/$defs/point"
-                },
-                "Margins": {
-                    "$ref": "#/$defs/margins"
-                },
-                "HorizontalAlignment": {
-                    "type": "string",
-                    "enum": [
-                        "Left",
-                        "Center",
-                        "Right"
-                    ]
-                },
-                "VerticalAlignment": {
-                    "type": "string",
-                    "enum": [
-                        "Top",
-                        "Center",
-                        "Bottom"
-                    ]
-                },
-                "Offset": {
-                    "$ref": "#/$defs/point"
-                }
-            },
-            "additionalProperties": true
-        },
-        "details": {
-            "type": "object",
-            "properties": {
-                "Display": {
-                    "$ref": "#/$defs/display"
-                }
-            },
-            "additionalProperties": true
-        },
-        "textItem": {
-            "type": "object",
-            "required": [
-                "Text"
-            ],
-            "properties": {
-                "Mode": {
-                    "$ref": "#/$defs/mode"
-                },
-                "Text": {
-                    "type": "string"
-                },
-                "Details": {
-                    "allOf": [
-                        {
-                            "$ref": "#/$defs/details"
-                        },
-                        {
-                            "type": "object",
-                            "properties": {
-                                "Style": {
-                                    "type": "object",
-                                    "properties": {
-                                        "FontName": {
-                                            "type": "string"
-                                        },
-                                        "FontSize": {
-                                            "type": "number",
-                                            "minimum": 6,
-                                            "maximum": 300
-                                        },
-                                        "FontColor": {
-                                            "type": "string"
-                                        },
-                                        "IsBold": {
-                                            "type": "boolean"
-                                        },
-                                        "IsItalic": {
-                                            "type": "boolean"
-                                        },
-                                        "IsRTL": {
-                                            "type": "boolean"
-                                        }
-                                    },
-                                    "additionalProperties": true
-                                }
-                            }
-                        }
-                    ]
-                }
-            },
-            "additionalProperties": true
-        },
-        "imageItem": {
-            "type": "object",
-            "properties": {
-                "Mode": {
-                    "$ref": "#/$defs/mode"
-                },
-                "Path": {
-                    "type": "string"
-                },
-                "Data": {
-                    "type": "string"
-                },
-                "Animate": {
-                    "type": "boolean"
-                },
-                "AnimationSpeed": {
-                    "type": "number",
-                    "minimum": 0.05,
-                    "maximum": 20
-                },
-                "Details": {
-                    "$ref": "#/$defs/details"
-                },
-                "customAnimation": {
-                    "$ref": "#/$defs/customAnimation"
-                }
-            },
-            "anyOf": [
-                {
-                    "required": [
-                        "Path"
-                    ]
-                },
-                {
-                    "required": [
-                        "Data"
-                    ]
-                }
-            ],
-            "additionalProperties": true
-        },
-        "qrItem": {
-            "type": "object",
-            "required": [
-                "Text"
-            ],
-            "properties": {
-                "Name": {
-                    "type": "string"
-                },
-                "Mode": {
-                    "$ref": "#/$defs/mode"
-                },
-                "Text": {
-                    "type": "string"
-                },
-                "Details": {
-                    "allOf": [
-                        {
-                            "$ref": "#/$defs/details"
-                        },
-                        {
-                            "type": "object",
-                            "properties": {
-                                "Style": {
-                                    "type": "object",
-                                    "properties": {
-                                        "DarkColor": {
-                                            "type": "string"
-                                        },
-                                        "LightColor": {
-                                            "type": "string"
-                                        },
-                                        "ECCLevel": {
-                                            "type": "string",
-                                            "enum": [
-                                                "Low",
-                                                "Medium",
-                                                "Quartile",
-                                                "High"
-                                            ]
-                                        },
-                                        "PixelsPerModule": {
-                                            "type": "integer",
-                                            "minimum": 1,
-                                            "maximum": 128
-                                        },
-                                        "QuietZoneModules": {
-                                            "type": "integer",
-                                            "minimum": 0,
-                                            "maximum": 16
-                                        }
-                                    },
-                                    "additionalProperties": true
-                                }
-                            }
-                        }
-                    ]
-                }
-            },
-            "additionalProperties": true
-        },
-        "taskbarPreviewProtection": {
-            "type": "object",
-            "properties": {
-                "Enabled": {
-                    "type": "boolean"
-                },
-                "DisablePeek": {
-                    "type": "boolean"
-                },
-                "ReplaceThumbnail": {
-                    "type": "boolean"
-                },
-                "ReplaceLivePreview": {
-                    "type": "boolean"
-                },
-                "Text": {
-                    "type": "string"
-                },
-                "UseWindowSubclass": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "Uses a same-process post-window-procedure subclass so browser taskbar previews cannot replace the protected DWM bitmap after the message is handled."
-                },
-                "ProcessTargetDiscoveryTimerMilliseconds": {
-                    "type": "integer",
-                    "minimum": 100,
-                    "maximum": 60000,
-                    "default": 500,
-                    "description": "Period for discovering preview-only HWNDs in the injected process."
-                },
-                "MaximumProcessTargets": {
-                    "type": "integer",
-                    "minimum": 1,
-                    "maximum": 128,
-                    "default": 16,
-                    "description": "Maximum number of additional preview-only HWNDs that can be tracked."
-                },
-                "ProcessWindowTargets": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/$defs/taskbarPreviewProcessWindowTarget"
+            {
+              "type": "object",
+              "properties": {
+                "Style": {
+                  "type": "object",
+                  "properties": {
+                    "FontName": {
+                      "type": "string"
                     },
-                    "description": "Browser-specific process HWNDs that receive DWM preview protection without receiving an overlay or toggle button."
+                    "FontSize": {
+                      "type": "number",
+                      "minimum": 6,
+                      "maximum": 300
+                    },
+                    "FontColor": {
+                      "type": "string"
+                    },
+                    "IsBold": {
+                      "type": "boolean"
+                    },
+                    "IsItalic": {
+                      "type": "boolean"
+                    },
+                    "IsRTL": {
+                      "type": "boolean"
+                    }
+                  },
+                  "additionalProperties": true
                 }
-            },
-            "additionalProperties": false
+              }
+            }
+          ]
         },
-        "taskbarPreviewProcessWindowTarget": {
-            "type": "object",
-            "properties": {
-                "RequiredWindowClasses": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "ExcludedWindowClasses": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "RequiredWindowTitles": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "ExcludedWindowTitles": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "IncludeVisibleWindows": {
-                    "type": "boolean",
-                    "default": true
-                },
-                "IncludeInvisibleWindows": {
-                    "type": "boolean",
-                    "default": true
-                },
-                "IncludeToolWindows": {
-                    "type": "boolean",
-                    "default": true
-                },
-                "IncludeOwnedWindows": {
-                    "type": "boolean",
-                    "default": true
-                },
-                "RequireTopLevelWindow": {
-                    "type": "boolean",
-                    "default": true
-                },
-                "MinimumWidth": {
-                    "type": "integer",
-                    "minimum": 0,
-                    "maximum": 8192
-                },
-                "MinimumHeight": {
-                    "type": "integer",
-                    "minimum": 0,
-                    "maximum": 8192
-                }
-            },
-            "additionalProperties": false,
-            "anyOf": [
-                {
-                    "required": [
-                        "RequiredWindowClasses"
-                    ]
-                },
-                {
-                    "required": [
-                        "RequiredWindowTitles"
-                    ]
-                }
-            ]
+        "ZIndex": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100000,
+          "description": "Layer order. Zero is reserved for the base solid-color background source."
+        }
+      },
+      "additionalProperties": true
+    },
+    "imageItem": {
+      "type": "object",
+      "properties": {
+        "Path": {
+          "type": "string"
         },
-        "performance": {
-            "type": "object",
-            "properties": {
-                "MaximumAnimationFps": {
-                    "type": "integer",
-                    "minimum": 1,
-                    "maximum": 60
-                },
-                "AnimationTimerMilliseconds": {
-                    "type": "integer",
-                    "minimum": 0
-                },
-                "DynamicContentTimerMilliseconds": {
-                    "type": "integer",
-                    "minimum": 0
-                },
-                "PlacementFallbackTimerMilliseconds": {
-                    "type": "integer",
-                    "minimum": 0
-                }
-            },
-            "additionalProperties": true
+        "Data": {
+          "type": "string"
+        },
+        "Animate": {
+          "type": "boolean"
+        },
+        "AnimationSpeed": {
+          "type": "number",
+          "minimum": 0.05,
+          "maximum": 20
+        },
+        "Details": {
+          "$ref": "#/$defs/details"
         },
         "customAnimation": {
-            "type": "object",
-            "properties": {
-                "enabled": {
-                    "type": "boolean"
-                },
-                "pauseWhenWindowHidden": {
-                    "type": "boolean"
-                },
-                "updateIntervalMilliseconds": {
-                    "type": "integer",
-                    "minimum": 3,
-                    "maximum": 1000
-                },
-                "xExpression": {
-                    "type": "string",
-                    "maxLength": 2048
-                },
-                "yExpression": {
-                    "type": "string",
-                    "maxLength": 2048
-                },
-                "rotationExpression": {
-                    "type": "string",
-                    "maxLength": 2048
-                },
-                "opacityExpression": {
-                    "type": "string",
-                    "maxLength": 2048
-                },
-                "scaleExpression": {
-                    "type": "string",
-                    "maxLength": 2048
-                }
-            },
-            "additionalProperties": false
+          "$ref": "#/$defs/customAnimation"
+        },
+        "ZIndex": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100000,
+          "description": "Layer order. Zero is reserved for the base solid-color background source."
         }
+      },
+      "anyOf": [
+        {
+          "required": [
+            "Path"
+          ]
+        },
+        {
+          "required": [
+            "Data"
+          ]
+        }
+      ],
+      "additionalProperties": true
+    },
+    "qrItem": {
+      "type": "object",
+      "required": [
+        "Text"
+      ],
+      "properties": {
+        "Name": {
+          "type": "string"
+        },
+        "Text": {
+          "type": "string"
+        },
+        "Details": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/details"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "Style": {
+                  "type": "object",
+                  "properties": {
+                    "DarkColor": {
+                      "type": "string"
+                    },
+                    "LightColor": {
+                      "type": "string"
+                    },
+                    "ECCLevel": {
+                      "type": "string",
+                      "enum": [
+                        "Low",
+                        "Medium",
+                        "Quartile",
+                        "High"
+                      ]
+                    },
+                    "PixelsPerModule": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 128
+                    },
+                    "QuietZoneModules": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 16
+                    }
+                  },
+                  "additionalProperties": true
+                }
+              }
+            }
+          ]
+        },
+        "ZIndex": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100000,
+          "description": "Layer order. Zero is reserved for the base solid-color background source."
+        }
+      },
+      "additionalProperties": true
+    },
+    "taskbarPreviewProtection": {
+      "type": "object",
+      "properties": {
+        "Enabled": {
+          "type": "boolean"
+        },
+        "DisablePeek": {
+          "type": "boolean"
+        },
+        "ReplaceThumbnail": {
+          "type": "boolean"
+        },
+        "ReplaceLivePreview": {
+          "type": "boolean"
+        },
+        "Text": {
+          "type": "string"
+        },
+        "UseWindowSubclass": {
+          "type": "boolean",
+          "default": true,
+          "description": "Uses a same-process post-window-procedure subclass so browser taskbar previews cannot replace the protected DWM bitmap after the message is handled."
+        },
+        "ProcessTargetDiscoveryTimerMilliseconds": {
+          "type": "integer",
+          "minimum": 100,
+          "maximum": 60000,
+          "default": 500,
+          "description": "Period for discovering preview-only HWNDs in the injected process."
+        },
+        "MaximumProcessTargets": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 128,
+          "default": 16,
+          "description": "Maximum number of additional preview-only HWNDs that can be tracked."
+        },
+        "ProcessWindowTargets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/taskbarPreviewProcessWindowTarget"
+          },
+          "description": "Browser-specific process HWNDs that receive DWM preview protection without receiving an overlay or toggle button."
+        }
+      },
+      "additionalProperties": false
+    },
+    "taskbarPreviewProcessWindowTarget": {
+      "type": "object",
+      "properties": {
+        "RequiredWindowClasses": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "ExcludedWindowClasses": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "RequiredWindowTitles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "ExcludedWindowTitles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "IncludeVisibleWindows": {
+          "type": "boolean",
+          "default": true
+        },
+        "IncludeInvisibleWindows": {
+          "type": "boolean",
+          "default": true
+        },
+        "IncludeToolWindows": {
+          "type": "boolean",
+          "default": true
+        },
+        "IncludeOwnedWindows": {
+          "type": "boolean",
+          "default": true
+        },
+        "RequireTopLevelWindow": {
+          "type": "boolean",
+          "default": true
+        },
+        "MinimumWidth": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 8192
+        },
+        "MinimumHeight": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 8192
+        }
+      },
+      "additionalProperties": false,
+      "anyOf": [
+        {
+          "required": [
+            "RequiredWindowClasses"
+          ]
+        },
+        {
+          "required": [
+            "RequiredWindowTitles"
+          ]
+        }
+      ]
+    },
+    "performance": {
+      "type": "object",
+      "properties": {
+        "MaximumAnimationFps": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 60
+        },
+        "AnimationTimerMilliseconds": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "DynamicContentTimerMilliseconds": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "PlacementFallbackTimerMilliseconds": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": true
+    },
+    "customAnimation": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "pauseWhenWindowHidden": {
+          "type": "boolean"
+        },
+        "updateIntervalMilliseconds": {
+          "type": "integer",
+          "minimum": 3,
+          "maximum": 1000
+        },
+        "xExpression": {
+          "type": "string",
+          "maxLength": 2048
+        },
+        "yExpression": {
+          "type": "string",
+          "maxLength": 2048
+        },
+        "rotationExpression": {
+          "type": "string",
+          "maxLength": 2048
+        },
+        "opacityExpression": {
+          "type": "string",
+          "maxLength": 2048
+        },
+        "scaleExpression": {
+          "type": "string",
+          "maxLength": 2048
+        }
+      },
+      "additionalProperties": false
+    },
+    "shaderLayer": {
+      "type": "object",
+      "properties": {
+        "Name": {
+          "type": "string"
+        },
+        "Enabled": {
+          "type": "boolean"
+        },
+        "ZIndex": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100000
+        },
+        "UpdateIntervalMilliseconds": {
+          "type": "integer",
+          "minimum": 16,
+          "maximum": 1000
+        },
+        "Source": {
+          "type": "string",
+          "maxLength": 65536
+        },
+        "Example": {
+          "type": "string"
+        },
+        "Geometry": {
+          "type": "string",
+          "enum": [
+            "Rectangle",
+            "Circle",
+            "Triangle"
+          ]
+        },
+        "Display": {
+          "$ref": "#/$defs/display"
+        },
+        "customAnimation": {
+          "$ref": "#/$defs/customAnimation"
+        }
+      },
+      "required": [
+        "Source"
+      ],
+      "additionalProperties": true
+    },
+    "developerRenderer": {
+      "type": "object",
+      "properties": {
+        "Shaders": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "$ref": "#/$defs/shaderLayer"
+          }
+        }
+      },
+      "additionalProperties": true
     }
+  }
 }

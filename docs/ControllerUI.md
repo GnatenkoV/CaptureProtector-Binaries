@@ -43,6 +43,7 @@ The Protection rules page owns the global configuration draft. It provides:
 
 - process/rule tree editing;
 - searchable process selection with Process, PID, Windows, and Window title/path headers, plus drag-to-window picking;
+- compact process rows: the window summary and executable path each stay on one trimmed line, with the complete value available as a tooltip;
 - per-rule inline help;
 - initialization, linking, and editing of per-process visual configs;
 - save/reload operations that refresh the active process set.
@@ -63,7 +64,7 @@ The **Window and performance** section edits the root configuration objects:
 
 The editor preserves the modern toggle-placement schema when a config already uses `Margins`, alignment, location, or offset fields. In that case the left and bottom inset controls update `ToggleButton.Margins.Left` and `ToggleButton.Margins.Bottom` rather than converting the config back to the legacy shorthand.
 
-Every visual rule stores its own `Background` or `Overlay` mode, placement, alignment, margins, offsets, opacity, and content-specific style. Image rules offer two explicit source actions: **Select image** writes an external `Path`, while **Select data** embeds the selected file as Base64 `Data` in the configuration. Selecting one source clears the other.
+The immutable **General** rule owns the base source at z-index `0`. Every Text, Image, QR code, and Shader rule is an ordinary positive scene layer; drag-and-drop order controls its z-index. When a new visual rule is created, the editor selects it and scrolls the scene-layer list to it. Each visual rule stores placement, alignment, margins, offsets, opacity, and content-specific style. Image rules offer two explicit source actions: **Select image** writes an external `Path`, while **Select data** embeds the selected file as Base64 `Data` in the configuration. Selecting one source clears the other.
 
 Image rules also expose a **Custom animation** panel. It contains the DVD-bounce preset, playback controls, X/Y expressions, optional appearance expressions, and a runtime-variable reference. The panel remains limited to one image instance and numeric expressions; it does not create particles or duplicate images.
 
@@ -112,7 +113,7 @@ The Language selector always includes built-in English and discovers additional 
 
 ## About
 
-The About page shows the product identity, version, installation folder, user-data path, active settings path, and log folder. It also summarizes the configured-process workflow and controller capabilities.
+The About page shows the product identity, version, current installation and data locations, and a concise description of the current process-rule, scene-layer, Effects Studio, preview, theme, and localization capabilities. It also includes an explicit reminder that CaptureProtector is for applications and data the user is authorized to manage, and that Windows capture behavior depends on the exact capture workflow.
 
 ## Tray menu
 
